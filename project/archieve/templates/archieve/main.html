@@ -1,0 +1,120 @@
+{% extends "./index.html" %}
+{% block title %}<title>العيادات</title>{% endblock %}
+
+{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+{% block style %}
+    @media print {
+        /* Add your printer-specific styles here */
+        body {
+        font-size: 12pt;
+        font-family: Arial, sans-serif;
+        }
+        
+        /* Hide non-printable elements */
+        .no-print {
+        display: none !important;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container ">
+    <div class="row ">
+        <p class="text-center text-danger h1 mb-3">الوقت والتاريخ</p>
+        <div class="col-6 text-center m-auto text-info" id="updatedDateTime" style="">
+            <p class="bg-info text-white p-4 h5"><span id="time"></span> الساعة <span id="date"></span></p>
+        </div>
+    </div>
+    <div class="row">
+        {% for ayada in ayadat %}
+            <div class="col-6 mr-auto mr-left-auto mt-4 mb-0  text-center">
+                <input type="hidden" value="{{ayada.id}}" id="ayada_id">
+                <div class="text-info h4">
+                    <p>ارقام الانتظار المحجوزة حتى الأن</p>
+                    <p class="mb-0 text-danger p-2"><span> 15 </span> رقم انتظار</p>
+                </div>
+                <button class="btn btn-primary p-3 w-100" style="font-size:2.4rem; font-weight:bold" data-toggle="modal" data-target="#savePrintModal">
+                    {{ayada.name}}
+                </button>
+                
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% load static %}
+
+<!-- Modal -->
+<div class="modal fade" id="savePrintModal" tabindex="-1" role="dialog" aria-labelledby="savePrintModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:19.5rem">
+        <div class="modal-content">
+            <div class="client_data" id="client_data_print">
+                <div class="modal-header d-block">
+                    <h6 class="modal-title m-auto" id="exampleModalLongTitle" style=" font-weight:900">
+                        <spna>الهيئة العامة للتأمين الصحى- فرع اسوان</span>
+                        <img class="d-inline-block mr-3" style="width:5rem" src="{% static 'archieve/imgs/hio2.png' %}">
+    
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>عيادة <span id="ayada" class="h6"> الانف والاذن والحنجره </span><input type="hidden" value="" id="selectedAyada"></p>
+                    <hr>
+                    <p><h5>رقم الانتظار : </h5> <h1 id="count">16</h1></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary text-right ml-4" id="savePrintBtn">حفظ وطباعة</button>
+                <button type="button" class="btn btn-secondary mr-5" data-dismiss="modal">رجوع</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        // function to print content of modal
+        function printPage() {
+            // Create a new window to hold the printable version of the page
+            var printWindow = window.open('', '', 'width=300,height=200');
+            
+            // Write the printable version of the page to the new window
+            printWindow.document.write('<html lang="ar"><head><title>رقم انتظار</title>');
+            printWindow.document.write('<link rel="stylesheet" type="text/css" href="{% static 'archieve/css/bootstrap.min.css' %}">');
+            printWindow.document.write('</head><body style="direction: ltr;text-align: center; padding-right:135px">');
+            printWindow.document.write(document.getElementById('client_data_print').innerHTML);
+            printWindow.document.write('</body></html>');
+            
+            // Print the page
+            printWindow.print();
+            
+            // Close the new window
+            printWindow.close();
+          }
+
+        // on click savePrintBtn  
+        $("#savePrintBtn").click(function(){
+            console.log("printing")
+            printPage()
+        })
+
+        // ajax to get updated time and date evey minute
+        function getDateTime() {
+            setInterval(function(){
+                $.ajax({
+                    url: '/getDateTime/',
+                    success: function(data) {
+                        console.log(data);
+                        var time = data.date;
+                        var date = data.time;
+                        $('#time').text(time);
+                        $('#date').text(date);
+                      }
+                });
+            },900)
+        }
+        
+        getDateTime()
+    </script>
+{% endblock %}
