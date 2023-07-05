@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container ">
+<div class="container " style="min-height:100vh">
     <div class="row ">
         <p class="text-center text-danger h1 mb-3">الوقت والتاريخ</p>
         <div class="col-6 text-center m-auto text-info" id="updatedDateTime" style="">
@@ -28,13 +28,14 @@
     </div>
     <div class="row">
         {% for ayada in ayadat %}
-            <div class="col-6 mr-auto mr-left-auto mt-4 mb-0  text-center">
-                <input type="hidden" value="{{ayada.id}}" id="ayada_id">
+            <div class="col-6 mr-auto mr-left-auto mt-4 mb-0  text-center ayada_info">
+                <input type="hidden" value="{{ayada.id}}" class="ayada_id">
                 <div class="text-info h4">
                     <p>ارقام الانتظار المحجوزة حتى الأن</p>
-                    <p class="mb-0 text-danger p-2"><span> 15 </span> رقم انتظار</p>
+                    <p class="mb-0 text-danger p-2"><span class="currentCount">  </span> رقم انتظار</p>
                 </div>
-                <button class="btn btn-primary p-3 w-100" style="font-size:2.4rem; font-weight:bold" data-toggle="modal" data-target="#savePrintModal">
+                <button class="btn btn-primary p-3 w-100 ayada_name" style="font-size:2.4rem; font-weight:bold" data-toggle="modal" data-target="#savePrintModal" >
+                    <input type="hidden" value="" class="next_count">
                     {{ayada.name}}
                 </button>
                 
@@ -54,7 +55,6 @@
                         <spna>الهيئة العامة للتأمين الصحى- فرع اسوان</span>
                         <img class="d-inline-block mr-3" style="width:5rem" src="{% static 'archieve/imgs/hio2.png' %}">
     
-                    <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -74,6 +74,30 @@
 
 {% block script %}
     <script>
+        // 
+        function getlastayadaCount(el){
+            
+            let ayadaId = el.find('.ayada_id').val()
+            console.log(`ayadaId => ${ayadaId}`)
+
+            $.ajax({
+                url: `/getLastAyadaCount/${ayadaId}/`,
+                success: function(data) {
+                    console.log(data);
+                    var count = data.count;
+                    var nextcount = data.nextCount;
+                    el.find($('.currentCount')).text(count);
+                    el.find($('.next_count')).val(nextcount)
+                  }
+            });
+        }
+        
+        // function to get last count for every ayada
+        $(".ayada_info").each(function(){
+            console.log("ayad infos")
+            getlastayadaCount($(this))
+        })
+
         // function to print content of modal
         function printPage() {
             // Create a new window to hold the printable version of the page

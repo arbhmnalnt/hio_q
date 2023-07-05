@@ -9,4 +9,5 @@ app_name='arch'
 urlpatterns = [
     path('', mainPage, name='main'),
     path('getDateTime/', getDateTime, name='getDateTime'),
+    path('getLastAyadaCount/<int:pk>/', getLastAyadaCount, name='getLastAyadaCount'),
 ] 
