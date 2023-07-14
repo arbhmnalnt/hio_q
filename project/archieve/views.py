@@ -3,6 +3,10 @@ from .models import *
 from datetime import datetime
 from django.http import JsonResponse
 from django.db.models import Q
+from django.db.models.functions import Extract, Cast
+from django.db.models import Value, IntegerField
+
+
 
 
 # Create your views here.
@@ -12,10 +16,14 @@ def getLastAyadaCount(request, pk):
     current_time = now.strftime("%I:%M:%S %p")
     current_date = now.strftime("%Y-%m-%d")
 
-    # Check if any visit was created at the same date and in AM/PM
+    # Get the current time shift as AM or PM
+    current_shift = now.strftime("%p")
+
+    # Check if any visit was created at the same date and in the same shift as the current time
+    ayadaPk = Ayada.objects.get(pk=pk)
     lastAyadaVisit = Visit.objects.filter(
-        Q(created_at__date=current_date) & 
-        (Q(created_at__hour__lt=12) | Q(created_at__hour__gte=12))
+        Q(created_at__date=current_date) & Q(ayada=ayadaPk) &
+        (Q(created_at__hour__lt=12) if current_shift == 'AM' else Q(created_at__hour__gte=12))
     )
 
     if lastAyadaVisit.exists():

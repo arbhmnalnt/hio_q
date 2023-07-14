@@ -12,3 +12,4 @@ class VisitAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id', 'ayada', 'count', 'created_by', 'created_at')
 
 admin.site.register(Visit, VisitAdmin)
+
