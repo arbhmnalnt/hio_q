@@ -21,7 +21,7 @@
 {% block content %}
 <div class="container " style="min-height:100vh">
     <div class="row ">
-        <p class="text-center text-danger h1 mb-3">الوقت والتاريخ</p>
+        <p class="text-center text-danger h4 mb-3">الوقت والتاريخ</p>
         <div class="col-6 text-center m-auto text-info" id="updatedDateTime" style="">
             <p class="bg-info text-white p-4 h5"><span id="time"></span> الساعة <span id="date"></span></p>
         </div>
@@ -30,7 +30,7 @@
         {% for ayada in ayadat %}
             <div class="col-6 mr-auto mr-left-auto mt-4 mb-0  text-center ayada_info">
                 <input type="hidden" value="{{ayada.id}}" class="ayada_id">
-                <div class="text-info h4">
+                <div class="text-info h6">
                     <p>ارقام الانتظار المحجوزة حتى الأن</p>
                     <p class="mb-0 text-danger p-2"><span class="currentCount">  </span> رقم انتظار</p>
                 </div>
@@ -74,6 +74,11 @@
 
 {% block script %}
     <script>
+        // function to get ayada data to the model 
+
+        
+
+
         // 
         function getlastayadaCount(el){
             
