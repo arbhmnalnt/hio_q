@@ -9,7 +9,7 @@ class AyadaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 admin.site.register(Ayada, AyadaAdmin)
 
 class VisitAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('id', 'ayada', 'count', 'created_by', 'created_at')
+    list_display = ('id', 'name', 'clientNum', 'lawOrentity','ayada', 'waitNo', 'created_by', 'created_at')
 
 admin.site.register(Visit, VisitAdmin)
 

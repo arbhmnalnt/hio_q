@@ -26,15 +26,35 @@
             <p class="bg-info text-white p-4 h5"><span id="time"></span> الساعة <span id="date"></span></p>
         </div>
     </div>
+    <!-- بيانات المنتفع -->
+    <div class="row client_data_inputs_holder" id="client_data_inputs_holder">
+        <div class="col-10 text-center m-auto">
+            <h3 class="text-center">بيانات المنتفع</h3>
+            <hr>
+        </div>
+        <div class="col-4 text-center">
+            <label class="h6">اسم المنتفع ثلاثي على الأقل</label>
+            <input class="form-control input name text-center h6" id="name" name="name">
+        </div>
+        <div class="col-4 text-center">
+            <label class="h6">رقم الحاسب</label>
+            <input type="number" class="form-control input clientNum text-center h5" id="clientNum" name="clientNum">
+        </div>
+        <div class="col-4 text-center">
+            <label class="h6">جهة العمل / القانون</label>
+            <input class="form-control input lawOrentity text-center h5" id="lawOrentity" name="lawOrentity">
+        </div>
+        <div class="col-12"><hr></div>
+    </div>
     <div class="row">
         {% for ayada in ayadat %}
-            <div class="col-6 mr-auto mr-left-auto mt-4 mb-0  text-center ayada_info">
+            <div class="col-4 mr-auto mr-left-auto mt-4 mb-0  text-center ayada_info">
                 <input type="hidden" value="{{ayada.id}}" class="ayada_id">
                 <div class="text-info h6">
                     <p>ارقام الانتظار المحجوزة حتى الأن</p>
                     <p class="mb-0 text-danger p-2"><span class="currentCount">  </span> رقم انتظار</p>
                 </div>
-                <button class="btn btn-primary p-3 w-100 ayada_name" style="font-size:2.4rem; font-weight:bold" data-toggle="modal" data-target="#savePrintModal" >
+                <button class="btn btn-primary p-1 w-100 ayada_name" style="max-height:166px;font-size:2.4rem; font-weight:bold" data-toggle="modal" data-target="#savePrintModal" >
                     <input type="hidden" value="" class="next_count">
                     {{ayada.name}}
                 </button>
@@ -47,7 +67,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="savePrintModal" tabindex="-1" role="dialog" aria-labelledby="savePrintModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:19.5rem">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:17.5rem">
         <div class="modal-content">
             <div class="client_data" id="client_data_print">
                 <div class="modal-header d-block">
@@ -58,9 +78,14 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>عيادة <span id="ayada" class="h6"> الانف والاذن والحنجره </span><input type="hidden" value="" id="selectedAyada"></p>
+                    <p class="h6 client_info" id="client_info"></p>
+                    <p class="h6">عيادة <span id="ayada" class="h5"> الانف والاذن والحنجره </span><input type="hidden" value="" id="selectedAyada"></p>
                     <hr>
-                    <p><h5>رقم الانتظار : </h5> <h1 id="count">16</h1></p>
+                    <h3>رقم الانتظار : </h3>
+                    <span id="count" class="mr-5 border p-2 h5 d-inline-block">16</span>
+                    <hr>
+                    <h6>الساعة : <span id="time2"></span></h6>
+                    <h6 id="shift"></h6>
                 </div>
             </div>
             <div class="modal-footer">
@@ -74,11 +99,29 @@
 
 {% block script %}
     <script>
+        // function to make the print data ready in the modal
+        $("button.ayada_name").click(function(){
+            let ayadaName   = $(this).text().trim(),
+                ayadaId      = $(this).prev().prev().val(),
+                currentNum  = $(this).prev().find("span.currentCount").text(),
+                num         = parseInt(currentNum) + 1;
+
+            $("div.modal-body").find("span#ayada").text(ayadaName);
+            $("div.modal-body").find("span#count").text(num);
+            let clientName  = $("input#name").val(),
+                clientNum   = $("input#clientNum").val(),
+                lawOrentity = $("input#lawOrentity").val();
+                text = `<p>${clientName}</p><p>${clientNum} \\|/ ${lawOrentity}</p>`
+
+            $("#client_info").html(`${text}`)
+
+            console.log("ayadaId => ", ayadaId)
+            // save data 
+            saveData(ayadaId, clientName, clientNum, lawOrentity, num)
+
+            asasas
+        })
         // function to get ayada data to the model 
-
-        
-
-
         // 
         function getlastayadaCount(el){
             
@@ -139,9 +182,30 @@
                         var date = data.time;
                         $('#time').text(time);
                         $('#date').text(date);
+                        $('#time2').text(date);
+                        $("#shift").text(data.shift)
                       }
                 });
             },900)
+        }
+
+        // save data function declartion 
+        function saveData(ayadaId, clientName, clientNum, lawOrentity, waitNo){
+            var data = {
+                    'ayadaId': ayadaId,
+                    'clientName': clientName,
+                    'clientNum': clientNum,
+                    'lawOrentity': lawOrentity,
+                    'waitNo': waitNo
+                };
+            $.ajax({
+                url: '/saveData/',
+                type: 'POST',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    console.log(response); // handle the response from the server
+                }
+            });
         }
         
         getDateTime()

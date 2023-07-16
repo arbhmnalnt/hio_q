@@ -10,4 +10,6 @@ urlpatterns = [
     path('', mainPage, name='main'),
     path('getDateTime/', getDateTime, name='getDateTime'),
     path('getLastAyadaCount/<int:pk>/', getLastAyadaCount, name='getLastAyadaCount'),
+    path('saveData/', saveData, name='saveData'),
+    
 ] 
